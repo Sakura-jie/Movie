@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>树懒电影---重置您的密码</title>
+    <link rel="stylesheet" href="../static/css/resetpass.css">
+</head>
+<body>
+    <form method="post" id="resetform">
+    <div class="from">
+    <img class="bgc" src="../static/img/revise.jpg" alt="">
+    <div class="submit">
+        <span class="form_title">重置密码</span>
+        <div class="form_input">
+            <span>手机号码：</span>
+            <input class="inputs" type="text" id="userphone" value="" placeholder="输入您的手机号码">
+        </div>
+        <div class="form_input">
+            <span>新密码:</span>
+            <input class="inputs" type="password" id="resetpass1" value="" placeholder="输入您的新密码">
+        </div>
+        <div class="form_input">
+            <span>再次输入:</span>
+            <input class="inputs" type="password" id="resetpass2" value="" placeholder="再次输入您的新密码">
+        </div>
+        <div class="btn_submit">
+            <input type="reset" class="btn" value="清空">
+            <input type="button" class="home_href" id="resetbtn" onclick="resetpass()" value="提交">
+        </div>
+    </div>
+</div>
+        </form>
+</body>
+</html>
+<script src="../static/js/jquery.min.js"></script>
+<script type="text/javascript">
+    function resetpass(){
+        var userphone=document.getElementById("userphone").value
+        var resetpass1=document.getElementById("resetpass1").value
+        var resetpass2=document.getElementById("resetpass2").value
+        var submit_flag=1
+        //判空
+        if((userphone.length==0)||(resetpass1.length==0)||(resetpass2.length==0)){
+            submit_flag=0
+            alert("请把信息填写完整！")
+        }
+        //判断密码一致性
+        if(resetpass2!=resetpass1){
+            submit_flag=0
+            alert("两次填写的密码不一致")
+            document.getElementById("resetpass1").focus();
+        }
+        //判断手机号
+        if(userphone.length!=11){
+            submit_flag=0
+            alert("手机号码应为11位！")
+            document.getElementById("userphone").focus();
+        }
+        var regu =  /^1[3456789]\d{9}$/
+        if(!(regu.test(userphone)) ){
+            submit_flag=0
+            alert("手机号码格式有误！")
+            document.getElementById("userphone").focus();
+        }
+        //判断密码格式
+        if(!((resetpass1.length>=6)&&resetpass1.length<=18))
+        {
+            submit_flag=0
+            alert("密码长度应该为6-16位!")
+            document.getElementById("resetpass1").focus();
+        }
+            var regex = new RegExp('(?=.*[0-9])(?=.*[a-zA-Z]).{6,18}');
+            part_pass=resetpass1.split(" ")
+        if((!(regex.test(resetpass1))) || part_pass.length!=1)
+        {
+            submit_flag=0
+            alert("密码为数字+英文字母 且不可以包含空格！")
+            document.getElementById("resetpass1").focus();
+        }
+
+        //发起请求
+            if(submit_flag==1)
+        {
+            $.ajax({
+                url:"/resetpass",
+                data:{userphone:userphone,resetpass:resetpass2},
+                success: function (data) {
+                    if (data.data==1)
+                    {
+                        alert("密码修改成功！")
+                        window.open("/",'_self')
+                    }
+                    else
+                    {
+                        alert("修改密码失败！请重试")
+                    }
+                },
+                error: function (xhr, type, errorThrown) {
+                    // print("ajax请求失败！")
+                }
+            })
+        }
+        // alert(submit_flag)
+    }
+</script>
